@@ -4,13 +4,16 @@
 
 #include "AssetActions/QuickAssetAction.h"
 
-#include "LongTools\Public\DebugUtilities.h"
+#include "LongTools/Public/DebugUtilities.h"
 
-#include <Editor\Blutility\Public\EditorUtilityLibrary.h>
-#include <Editor\UnrealEd\Public\ObjectTools.h>
-#include <EditorScriptingUtilities\Public\EditorAssetLibrary.h>
-#include <Runtime\Core\Public\Misc\MessageDialog.h>
-#include <Runtime\Engine\Classes\Materials\MaterialInstanceConstant.h>
+#include <Editor/Blutility/Public/EditorUtilityLibrary.h>
+#include <Editor/UnrealEd\Public/ObjectTools.h>
+#include <EditorScriptingUtilities/Public/EditorAssetLibrary.h>
+#include <Runtime/AssetRegistry/Public/AssetRegistry/AssetRegistryModule.h>
+#include <Runtime/Core/Public/Misc/MessageDialog.h>
+#include <Runtime/Engine/Classes/Materials/MaterialInstanceConstant.h>
+#include <Developer/AssetTools/Public/AssetToolsModule.h>
+
 
 // -----------------------------------------------------------------------------
 
@@ -123,6 +126,8 @@ void UQuickAssetAction::RemoveUnusedAssets()
 	TArray<FAssetData> SelectedAssetData = UEditorUtilityLibrary::GetSelectedAssetData();
 	TArray<FAssetData> UnusedAssetData;
 
+	FixUpRedirectors();
+
 	for (const FAssetData& SelectedAsset : SelectedAssetData)
 	{
 		TArray<FString> PackageReferencersForAsset = UEditorAssetLibrary::FindPackageReferencersForAsset(SelectedAsset.GetSoftObjectPath().GetLongPackageName());
@@ -145,6 +150,36 @@ void UQuickAssetAction::RemoveUnusedAssets()
 	{
 		DebugUtilities::ShowNotifyInfo(TEXT("Successfully deleted ") + FString::FromInt(DeletedAssets) + TEXT(" unused assets."));
 	}
+}
+
+// -----------------------------------------------------------------------------
+
+void UQuickAssetAction::FixUpRedirectors()
+{
+	TArray<UObjectRedirector*> RedirectorsToFix;
+
+	FModuleManager& ModuleManager = FModuleManager::Get();
+	FAssetRegistryModule& AssetRegistryModule = ModuleManager.LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+
+	FARFilter Filter;
+	Filter.bRecursivePaths = true;	// will allow going in sub folders
+	Filter.PackagePaths.Emplace("/Game"); // folder path we want filter to go through
+	Filter.ClassPaths.Emplace("ObjectRedirector");
+
+	TArray<FAssetData> OutRedirectors;
+	AssetRegistryModule.Get().GetAssets(Filter, OutRedirectors);
+
+	for (const FAssetData& RedirectorData : OutRedirectors)
+	{
+		if (UObjectRedirector* RedirectorToFix = Cast<UObjectRedirector>(RedirectorData.GetAsset()))
+		{
+			RedirectorsToFix.Add(RedirectorToFix);
+		}
+	}
+
+	FAssetToolsModule& AssetToolsModule = ModuleManager.LoadModuleChecked<FAssetToolsModule>(TEXT("AssetTools"));
+
+	AssetToolsModule.Get().FixupReferencers(RedirectorsToFix);
 }
 
 // -----------------------------------------------------------------------------
