@@ -16,6 +16,13 @@ public:
 	/** IModuleInterface implementation */
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
+
+private:
+	void InitCBMenuExtension();
+	void AddCBMenuEntry(FMenuBuilder& InMenuBuilder);
+	void OnDeleteUnusedAssetButtonClicked();
+
+	TSharedRef<FExtender> CustomCBMenuExtender(const TArray<FString>& InSelectedPaths);
 };
 
 // -----------------------------------------------------------------------------
