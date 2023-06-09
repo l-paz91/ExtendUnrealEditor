@@ -1,4 +1,4 @@
-// copyright longPointer* 2023
+// copyright longPointer 2023*
 
 #pragma once
 
@@ -32,6 +32,8 @@ public:
 	void RemoveUnusedAssets();
 
 private:
+	void FixUpRedirectors();
+
 	TMap<UClass*, FString> mPrefixMap;
 	
 };
