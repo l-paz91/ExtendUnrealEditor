@@ -7,8 +7,8 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-#include <Widgets/Docking/SDockTab.h>
 #include <Framework/Docking/TabManager.h>
+#include <Widgets/Docking/SDockTab.h>
 
 // -----------------------------------------------------------------------------
 
@@ -30,6 +30,7 @@ private:
 
 	void RegisterAdvancedDeletionTab();
 	TSharedRef<SDockTab> OnSpawnAdvancedDeletionTab(const FSpawnTabArgs& SpawnTabArgs);
+	TArray<TSharedPtr<FAssetData>> GetAllAssetDataUnderSelectedFolder();
 
 	TSharedRef<FExtender> CustomCBMenuExtender(const TArray<FString>& InSelectedPaths);
 
