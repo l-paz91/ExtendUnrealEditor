@@ -266,11 +266,38 @@ void FLongToolsModule::RegisterAdvancedDeletionTab()
 TSharedRef<SDockTab> FLongToolsModule::OnSpawnAdvancedDeletionTab(const FSpawnTabArgs& SpawnTabArgs)
 {
 	return SNew(SDockTab).TabRole(ETabRole::NomadTab)
-		// add a new widget slot
-		[
-			SNew(SAdvancedDeletionTab)
-			.TestString(TEXT("I am passing data"))
-		];
+	// add a new widget slot
+	[
+		SNew(SAdvancedDeletionTab)
+		.AssetDataArray(GetAllAssetDataUnderSelectedFolder())
+	];
+}
+
+// -----------------------------------------------------------------------------
+
+TArray<TSharedPtr<FAssetData>> FLongToolsModule::GetAllAssetDataUnderSelectedFolder()
+{
+	TArray<TSharedPtr<FAssetData>> AvailableAssetData;
+	TArray<FString> AssetPathsNames = UEditorAssetLibrary::ListAssets(mFolderPathsSelected[0]);
+
+	for (const FString& AssetPathName : AssetPathsNames)
+	{
+		if (AssetPathName.Contains(TEXT("Developers")) || AssetPathName.Contains(TEXT("Collections")))
+		{
+			// don't touch the root folders
+			continue;
+		}
+
+		if (!UEditorAssetLibrary::DoesAssetExist(AssetPathName))
+		{
+			continue;
+		}
+
+		const FAssetData Data = UEditorAssetLibrary::FindAssetData(AssetPathName);
+		AvailableAssetData.Add(MakeShared<FAssetData>(Data));
+	}
+
+	return AvailableAssetData;
 }
 
 // -----------------------------------------------------------------------------
