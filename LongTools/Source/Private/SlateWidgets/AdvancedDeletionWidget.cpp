@@ -47,10 +47,17 @@ void SAdvancedDeletionTab::Construct(const FArguments& InArgs)
 			]
 
 			// third slot for the asset list
-			+SVerticalBox::Slot()
-			.AutoHeight()
-			[
-				SNew(SScrollBox)
+			+ SVerticalBox::Slot()
+				.AutoHeight()
+				[
+					SNew(SScrollBox)
+					+ SScrollBox::Slot()
+					[
+						SNew(SListView<TSharedPtr<FAssetData>>)
+						.ItemHeight(24)
+						.ListItemsSource(&AssetDataUnderSelectedFolder)
+						.OnGenerateRow(this, &SAdvancedDeletionTab::OnGenerateRowForList)
+					]
 			]
 
 			// fourth slot for 3 buttons
@@ -60,6 +67,22 @@ void SAdvancedDeletionTab::Construct(const FArguments& InArgs)
 				SNew(SHorizontalBox)
 			]
 		];
+}
+
+// -----------------------------------------------------------------------------
+
+TSharedRef<ITableRow> SAdvancedDeletionTab::OnGenerateRowForList(TSharedPtr<FAssetData> AssetDataToDisplay, const TSharedRef<STableViewBase>& OwnerTable)
+{
+	const FString DisplayAssetName = AssetDataToDisplay->AssetName.ToString();
+
+	TSharedRef<STableRow<TSharedPtr<FAssetData>>> ListViewRowWidget =
+		SNew(STableRow<TSharedPtr<FAssetData>>, OwnerTable)
+		[
+			SNew(STextBlock)
+			.Text(FText::FromString(DisplayAssetName))
+		];
+
+	return ListViewRowWidget;
 }
 
 // -----------------------------------------------------------------------------
