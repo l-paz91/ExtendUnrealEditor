@@ -39,6 +39,7 @@ public class LongTools : ModuleRules
                 "CoreUObject",
 				"EditorScriptingUtilities",
 				"Engine",
+				"InputCore",
 				"Slate",
 				"SlateCore",
 				"UnrealEd",
