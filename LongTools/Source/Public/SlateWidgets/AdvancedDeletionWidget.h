@@ -20,6 +20,9 @@ public:
 	void Construct(const FArguments& InArgs);
 
 private:
+	TSharedRef<ITableRow> OnGenerateRowForList(TSharedPtr<FAssetData> AssetDataToDisplay,
+		const TSharedRef<STableViewBase>& OwnerTable);
+
 	TArray<TSharedPtr<FAssetData>> AssetDataUnderSelectedFolder;
 };
 
