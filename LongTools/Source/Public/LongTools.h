@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// copyright longPointer* 2023
 
 // -----------------------------------------------------------------------------
 
@@ -6,6 +6,9 @@
 
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
+
+#include <Widgets/Docking/SDockTab.h>
+#include <Framework/Docking/TabManager.h>
 
 // -----------------------------------------------------------------------------
 
@@ -21,8 +24,16 @@ private:
 	void InitCBMenuExtension();
 	void AddCBMenuEntry(FMenuBuilder& InMenuBuilder);
 	void OnDeleteUnusedAssetButtonClicked();
+	void OnDeleteEmptyFoldersMenuEntryClicked();
+	void OnAdvancedDeletionButtonClicked();
+	void FixUpRedirectors();
+
+	void RegisterAdvancedDeletionTab();
+	TSharedRef<SDockTab> OnSpawnAdvancedDeletionTab(const FSpawnTabArgs& SpawnTabArgs);
 
 	TSharedRef<FExtender> CustomCBMenuExtender(const TArray<FString>& InSelectedPaths);
+
+	TArray<FString> mFolderPathsSelected;
 };
 
 // -----------------------------------------------------------------------------
