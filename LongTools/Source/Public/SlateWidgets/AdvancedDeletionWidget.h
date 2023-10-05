@@ -23,7 +23,11 @@ private:
 	TSharedRef<ITableRow> OnGenerateRowForList(TSharedPtr<FAssetData> AssetDataToDisplay,
 		const TSharedRef<STableViewBase>& OwnerTable);
 
+	TSharedRef<SCheckBox> ConstructCheckBox(const TSharedPtr<FAssetData> AssetDataToDisplay);
+
 	TArray<TSharedPtr<FAssetData>> AssetDataUnderSelectedFolder;
+
+	void OnCheckBoxStateChanged(ECheckBoxState NewState, TSharedPtr<FAssetData> AssetData);
 };
 
 // -----------------------------------------------------------------------------
